@@ -4,6 +4,9 @@
 
 #include "structures.h"
 
+
+
+
 bool checkcredentials(char* loginid, char* password)
 {
 	if(loginid[0]=='F')
