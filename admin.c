@@ -7,10 +7,11 @@
 #include "common.h"
 
 int addfaculty();
+int viewFaculty();
 //for checking
 int main()
 {
-	int status=addfaculty();
+	int status=viewFaculty();
 	if(status)
 	{
 		printf("successfully added faculty\n");
@@ -78,12 +79,14 @@ int addfaculty()
         perror("Error in storing name\n"); //equal to 1 for handling empty name
         return 0;
     	}
+    	newf.name[bytesRead-1] = '\0';
     	printf("Enter email: \n");
 	bytesRead = read(STDIN_FILENO, newf.email, sizeof(newf.email));
 	if (bytesRead <= 1){
         perror("Error in storing email\n");
         return 0;
     	} 
+    	newf.email[bytesRead-1] = '\0';
     	char mob[11];
     	printf("Enter mobile number: \n");
 	bytesRead = read(STDIN_FILENO, mob, sizeof(mob));
@@ -95,13 +98,14 @@ int addfaculty()
     	{
     	newf.mobno[i]=mob[i]- '0';
     	}
+    	newf.no_of_offered_c=0;
 	for(int i=0;i<20;i++)
 	{
 	newf.offered_courses[i]=0;
 	}
 	
-	printf("name=%s",newf.name);
-    	printf("email=%s",newf.email);
+	printf("name=%s \n",newf.name);
+    	printf("email=%s \n",newf.email);
     	printf("mobile=");
     	for(int i=0;i<10;i++)
     	{
@@ -121,3 +125,70 @@ int addfaculty()
 	return 1;
 }
 
+int viewFaculty()
+{
+	ssize_t bytesRead;
+	char reqloginid[11];
+	printf("Enter login id of faculty you want to view: \n");
+	bytesRead = read(STDIN_FILENO, reqloginid, sizeof(reqloginid));
+	// Check if reading was successful 
+    	if (bytesRead <= 1) {
+        perror("Error in storing login id\n");
+        return 0;
+    	}
+    	reqloginid[bytesRead-1]='\0';
+	struct faculty faculty_detail;
+	int facfd=open("faculty.txt", O_RDONLY);
+	if(facfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	struct flock readl;
+	readl.l_type=F_RDLCK;
+        readl.l_whence=SEEK_SET;
+	readl.l_start=0;
+	readl.l_len=0;
+	int status=fcntl(facfd,F_SETLKW,&readl);
+	if(status==-1)
+	{
+		perror("error in fcntl\n");
+	}
+    	// Read and process records in a loop
+   	 while ((bytesRead = read(facfd, &faculty_detail, sizeof(struct faculty))) > 0)
+   	  {
+       		 // Process the record
+        	 if(strcmp(faculty_detail.loginid,reqloginid)==0)
+		  {
+			 printf("id= %d\n",faculty_detail.id);
+			 printf("loginid= %s\n",faculty_detail.loginid);
+			 printf("name= %s\n",faculty_detail.name);
+			 printf("email id= %s\n",faculty_detail.name);
+			 printf("mobile=");
+			 for(int i=0;i<10;i++)
+			 {
+			    	printf("%d",faculty_detail.mobno[i]);
+			 }
+			 printf("\n");
+			 printf("No. of offered courses= %d\n",faculty_detail.no_of_offered_c);
+			 printf("Offered courses=");
+			 for(int i=0;i<faculty_detail.no_of_offered_c;i++)
+			 {
+			    	printf("%d",faculty_detail.offered_courses[i]);
+			 }
+			 return 1;
+		  }
+   	 }
+   	 readl.l_type=F_UNLCK;
+	fcntl(facfd, F_SETLKW, &readl);
+    	// Check for read errors
+    	if (bytesRead == -1) {
+		perror("Error reading file");
+		close(facfd);
+		return 0;
+    	}
+
+    	// Close the file
+    	close(facfd);
+    	return 0;  	 
+}

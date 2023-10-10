@@ -31,30 +31,38 @@ int login()
 	struct user u;
 	printf("Welcome to login window...\n");
 	printf("Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
-  	printf("Enter user type char: ");
-  	fflush(stdin);
+  	printf("Enter user type char: \n");
 	ssize_t bytesRead = read(STDIN_FILENO, &u.usertype, sizeof(u.usertype));
 	if (bytesRead <= 0) {
         perror("Error in storing usertype\n");
         return 0;
     	}
+	if (u.usertype != 'A' && u.usertype != 'F' && u.usertype != 'S') {
+        printf("Invalid user type. Please enter A, F, or S.\n");
+        return 0;
+   	}
+   	int c;
+
+    	// Flush the input buffer by reading and discarding characters until a newline or EOF is encountered
+	while ((c = getchar()) != '\n' && c != EOF) {
+		// Discard the character
+	    }
+    	printf("Enter Login id: \n");
+    	bytesRead = read(STDIN_FILENO, u.loginid, sizeof(u.loginid));
 	// Check if reading was successful 
-    	printf("\nEnter Login id: ");
-    	bytesRead = read(STDIN_FILENO, &u.loginid, sizeof(u.loginid));
-	// Check if reading was successful 
-    	if (bytesRead <= 0) {
+    	if (bytesRead <= 1) {
         perror("Error in storing login id\n");
         return 0;
     	}
-    	printf("\nEnter password: ");
-    	bytesRead = read(STDIN_FILENO, &u.password, sizeof(u.password));
-    	int c;
-	while ((c = getchar()) != '\n' && c != EOF);
+    	u.loginid[bytesRead-1] = '\0';
+    	printf("Enter password: \n");
+    	bytesRead = read(STDIN_FILENO, u.password, sizeof(u.password));
 	// Check if reading was successful 
-    	if (bytesRead <= 0) {
+    	if (bytesRead <= 1) {
         perror("Error in storing password\n");
         return 0;
     	}
+    	u.password[bytesRead-1] = '\0';
     	int status=checkcredentials(u);
     	return status;
     	
@@ -62,8 +70,7 @@ int login()
 
 int checkcredentials(struct user u)
 {
-	printf("%c",u.usertype);
-	printf("LOGINID=%s",u.loginid);
+	
 	if(u.usertype=='F')
 	{
 		if(checkfaculty(u.loginid,u.password))
@@ -79,7 +86,7 @@ int checkcredentials(struct user u)
 	else if(u.usertype=='A')
 	{
 		
-		if(u.loginid==a.loginid && u.password==a.password)
+		if(strcmp(u.loginid,a.loginid)==0 && strcmp(u.password,a.password)==0)
 		{
 			return 1;
 		}
@@ -125,16 +132,22 @@ int checkfaculty(char* loginid,char* password)
 	readl.l_start=0;
 	readl.l_len=0;
 	int status=fcntl(facfd,F_SETLKW,&readl);
+	if(status==-1)
+	{
+		perror("error in fcntl\n");
+	}
 	ssize_t bytesRead;
     // Read and process records in a loop
    	 while ((bytesRead = read(facfd, &faculty_detail, sizeof(struct faculty))) > 0)
    	  {
-        // Process the record (in this example, we simply print it)
-         if(faculty_detail.loginid==loginid && faculty_detail.password==password)
+        // Process the record
+       
+         if(strcmp(faculty_detail.loginid,loginid)==0 && strcmp(faculty_detail.password,password)==0)
 		  {
 			 return 1;
 		  }
    	 }
+   	
 	readl.l_type=F_UNLCK;
 	fcntl(facfd, F_SETLKW, &readl);
     // Check for read errors

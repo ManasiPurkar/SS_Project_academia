@@ -19,7 +19,7 @@ struct user
 {
 	char loginid[11]; 
         char password[10];
-        int usertype; //A-1 or F-2 or S-3
+        char usertype; //A or F or S
 };
 
 struct student
@@ -44,6 +44,7 @@ struct faculty
         char name[30];
         char email[30];
         int mobno[10];
+        int no_of_offered_c;
         int offered_courses[10];
 
 };
