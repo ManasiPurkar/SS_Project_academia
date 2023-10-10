@@ -1,53 +1,115 @@
 #include<stdio.h>
 #include<fcntl.h>
 #include <string.h>
+#include <unistd.h>
+#include<stdlib.h>
 
 #include "structures.h"
 
+int login();
+int checkcredentials(struct user u);
+int checkfaculty(char* loginid,char* password);
 
 
-
-bool checkcredentials(char* loginid, char* password)
+//for checking
+int main()
 {
-	if(loginid[0]=='F')
+	int status=login();
+	if(status)
 	{
-		if(checkfaculty(loginid,password))
-		{
-		return true;
-		}
-		else
-		{
-		return false;
-		}
-	}
-	else if(loginid[0]=='A')
-	{
-		struct admin a;
-		char* apassword=a.password;
-		if(loginid==a.loginid && password==apassword)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		
+	printf("successfully logged in\n");
 	}
 	else
 	{
-		if(checkstudent(loginid,password))
+	printf("error in log in\n");
+	}
+	return 0;
+}
+
+int login()
+{
+	struct user u;
+	printf("Welcome to login window...\n");
+	printf("Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
+  	printf("Enter user type char: ");
+  	fflush(stdin);
+	ssize_t bytesRead = read(STDIN_FILENO, &u.usertype, sizeof(u.usertype));
+	if (bytesRead <= 0) {
+        perror("Error in storing usertype\n");
+        return 0;
+    	}
+	// Check if reading was successful 
+    	printf("\nEnter Login id: ");
+    	bytesRead = read(STDIN_FILENO, &u.loginid, sizeof(u.loginid));
+	// Check if reading was successful 
+    	if (bytesRead <= 0) {
+        perror("Error in storing login id\n");
+        return 0;
+    	}
+    	printf("\nEnter password: ");
+    	bytesRead = read(STDIN_FILENO, &u.password, sizeof(u.password));
+    	int c;
+	while ((c = getchar()) != '\n' && c != EOF);
+	// Check if reading was successful 
+    	if (bytesRead <= 0) {
+        perror("Error in storing password\n");
+        return 0;
+    	}
+    	int status=checkcredentials(u);
+    	return status;
+    	
+}
+
+int checkcredentials(struct user u)
+{
+	printf("%c",u.usertype);
+	printf("LOGINID=%s",u.loginid);
+	if(u.usertype=='F')
+	{
+		if(checkfaculty(u.loginid,u.password))
 		{
-		return true;
+		return 1;
 		}
 		else
 		{
-		return false;
+		perror("wrong credentials\n");
+		return 0;
 		}
 	}
+	else if(u.usertype=='A')
+	{
+		
+		if(u.loginid==a.loginid && u.password==a.password)
+		{
+			return 1;
+		}
+		else
+		{
+			perror("wrong credentials\n");
+			return 0;
+		}
+		
+	}
+	/*else if(u.usertype==3)
+	{
+		if(checkstudent(u.loginid,u.password))
+		{
+		return 1;
+		}
+		else
+		{
+		return 0;
+		}
+	}*/
+	else
+	{
+		perror("incorrect user type\n");
+		return 0;
+	}
+	return 1;
 }
 
-bool checkfaculty(char* loginid,char* password)
+int checkfaculty(char* loginid,char* password)
 {
  	
 	struct faculty faculty_detail;
@@ -55,7 +117,7 @@ bool checkfaculty(char* loginid,char* password)
 	if(facfd==-1)
 	{
 		perror("error in opening\n");
-		return false;
+		return 0;
 	}
 	struct flock readl;
 	readl.l_type=F_RDLCK;
@@ -70,7 +132,7 @@ bool checkfaculty(char* loginid,char* password)
         // Process the record (in this example, we simply print it)
          if(faculty_detail.loginid==loginid && faculty_detail.password==password)
 		  {
-			 return true;
+			 return 1;
 		  }
    	 }
 	readl.l_type=F_UNLCK;
@@ -79,13 +141,13 @@ bool checkfaculty(char* loginid,char* password)
     	if (bytesRead == -1) {
 		perror("Error reading file");
 		close(facfd);
-		return false;
+		return 0;
     	}
 
     	// Close the file
     	close(facfd);
 
-    return false;
+    return 0;
 	/*
     	char *token;
 

@@ -1,4 +1,4 @@
-
+#include<stdio.h>
 
 /*struct superadmin
 {
@@ -11,15 +11,16 @@ struct admin
 	char loginid[9];
 	char password[10];
 	*/
-	char loginid[]="Ad01";
-	char password[]="sadmin123";
+	char loginid[];
+	char password[];
 };
-/*struct user
+struct admin a={"Ad01","sadmin123"};
+struct user
 {
 	char loginid[11]; 
         char password[10];
         char usertype; //A or F or S
-};*/
+};
 struct student
 {
 	int id;

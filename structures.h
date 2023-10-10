@@ -11,9 +11,17 @@ struct admin
 	char loginid[9];
 	char password[10];
 	*/
-	char loginid[]="ad01";
-	char password[]="sadmin123";
+	char loginid[5];
+	char password[9];
 };
+struct admin a={"Ad01","sadmin123"};
+struct user
+{
+	char loginid[11]; 
+        char password[10];
+        int usertype; //A-1 or F-2 or S-3
+};
+
 struct student
 {
 	int id;
@@ -36,15 +44,18 @@ struct faculty
         char name[30];
         char email[30];
         int mobno[10];
-        int offered__courses[10];
+        int offered_courses[10];
 
 };
 struct course
 {
+	int id;
 	char name[20];
 	char dept[10];
 	int total_seats;
 	int enrolled_seats;
+	int offered_by;
+	int enrolled_stud[200]; //enrolled seats can be max 200
 	int credits;
 };
 
