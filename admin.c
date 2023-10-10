@@ -8,6 +8,7 @@
 
 int addfaculty();
 int viewFaculty();
+int modifyFaculty();
 //for checking
 int main()
 {
@@ -30,7 +31,7 @@ int addfaculty()
 	struct faculty lastf,newf;
 	
 	
-	int facfd=open("faculty.txt", O_RDWR | O_CREAT, 0766);
+	int facfd=open("faculty.txt", O_RDWR | O_CREAT | O_APPEND, 0766);
 	if(facfd==-1)
 	{
 		perror("error in opening faculty data\n");
@@ -125,6 +126,107 @@ int addfaculty()
 	return 1;
 }
 
+int modifyFaculty()
+{
+	ssize_t bytesRead;
+	char reqloginid[11];
+	printf("Enter login id of faculty you want to view: \n");
+	bytesRead = read(STDIN_FILENO, reqloginid, sizeof(reqloginid));
+	// Check if reading was successful 
+    	if (bytesRead <= 1) {
+        perror("Error in storing login id\n");
+        return 0;
+    	}
+    	reqloginid[bytesRead-1]='\0';
+	struct faculty faculty_detail;
+	int facfd=open("faculty.txt", O_RDWR);
+	if(facfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	/*struct flock readl;
+	readl.l_type=F_RDLCK;
+        readl.l_whence=SEEK_SET;
+	readl.l_start=0;
+	readl.l_len=0;
+	int status=fcntl(facfd,F_SETLKW,&readl);
+	if(status==-1)
+	{
+		perror("error in fcntl\n");
+	} */
+    	// Read and process records in a loop
+   	 while ((bytesRead = read(facfd, &faculty_detail, sizeof(struct faculty))) > 0)
+   	  {
+       		 // Process the record
+        	 if(strcmp(faculty_detail.loginid,reqloginid)==0)
+		  {
+		  	int offset=lseek(facfd,-sizeof(struct faculty),SEEK_CUR);
+			if(offset==-1)
+			{
+				perror("error in reaching required record\n");
+				return 0;
+			}
+			struct flock writel;
+			 writel.l_type=F_WRLCK;
+			 writel.l_whence=SEEK_CUR;
+		  	 writel.l_start=0;
+		  	 writel.l_len=sizeof(struct faculty);
+		 	 int status=fcntl(facfd,F_SETLKW,&writel);
+		 	 if(status==-1)
+			{
+				perror("error in fcntl\n");
+			}
+			 printf("Enter name: \n");
+			ssize_t bytesRead = read(STDIN_FILENO, faculty_detail.name, sizeof(faculty_detail.name));
+			if (bytesRead <= 1){
+      			  perror("Error in storing name\n"); //equal to 1 for handling empty name
+       			  return 0;
+    			}
+    			faculty_detail.name[bytesRead-1] = '\0';
+    			fflush(stdin);
+    			printf("Enter email: \n");
+			bytesRead = read(STDIN_FILENO, faculty_detail.email, sizeof(faculty_detail.email));
+			if (bytesRead <= 1){
+       				perror("Error in storing email\n");
+        			return 0;
+    			} 
+    			faculty_detail.email[bytesRead-1] = '\0';
+    			char mob[11];
+    			printf("Enter mobile number: \n");
+			bytesRead = read(STDIN_FILENO, mob, sizeof(mob));
+    			if (bytesRead <= 10){
+      			  perror("Error in storing mobile no.\n");
+      			  return 0;
+    			}
+    			for(int i=0;i<10;i++)
+    			{
+    				faculty_detail.mobno[i]=mob[i]- '0';
+    			}
+    			ssize_t bytesWrite=write(facfd,&faculty_detail,sizeof(struct faculty));
+			if (bytesWrite <= 0){
+       			 perror("Error in writing struct\n");
+      			  return 0;
+    			}
+			 writel.l_type=F_UNLCK;
+			 fcntl(facfd, F_SETLKW, &writel);
+			 close(facfd);
+			 return 1;
+		  }
+   	 }
+   	// readl.l_type=F_UNLCK;
+	//fcntl(facfd, F_SETLKW, &readl);
+    	// Check for read errors
+    	if (bytesRead == -1) {
+		perror("Error reading file");
+		close(facfd);
+		return 0;
+    	}
+
+    	// Close the file
+    	close(facfd);
+    	return 0;  	 
+}
 int viewFaculty()
 {
 	ssize_t bytesRead;
@@ -144,7 +246,7 @@ int viewFaculty()
 		perror("error in opening\n");
 		return 0;
 	}
-	struct flock readl;
+	/*struct flock readl;
 	readl.l_type=F_RDLCK;
         readl.l_whence=SEEK_SET;
 	readl.l_start=0;
@@ -153,17 +255,33 @@ int viewFaculty()
 	if(status==-1)
 	{
 		perror("error in fcntl\n");
-	}
+	} */
     	// Read and process records in a loop
    	 while ((bytesRead = read(facfd, &faculty_detail, sizeof(struct faculty))) > 0)
    	  {
        		 // Process the record
         	 if(strcmp(faculty_detail.loginid,reqloginid)==0)
 		  {
+			int offset=lseek(facfd,-sizeof(struct faculty),SEEK_CUR);
+			if(offset==-1)
+			{
+				perror("error in reaching required record\n");
+				return 0;
+			}
+			struct flock readl;
+			 readl.l_type=F_RDLCK;
+			 readl.l_whence=SEEK_CUR;
+		  	 readl.l_start=0;
+		  	 readl.l_len=sizeof(struct faculty);
+		 	 int status=fcntl(facfd,F_SETLKW,&readl);
+		 	 if(status==-1)
+			{
+				perror("error in fcntl\n");
+			}
 			 printf("id= %d\n",faculty_detail.id);
 			 printf("loginid= %s\n",faculty_detail.loginid);
 			 printf("name= %s\n",faculty_detail.name);
-			 printf("email id= %s\n",faculty_detail.name);
+			 printf("email id= %s\n",faculty_detail.email);
 			 printf("mobile=");
 			 for(int i=0;i<10;i++)
 			 {
@@ -176,19 +294,22 @@ int viewFaculty()
 			 {
 			    	printf("%d",faculty_detail.offered_courses[i]);
 			 }
+			  readl.l_type=F_UNLCK;
+			 fcntl(facfd, F_SETLKW, &readl);
+			 close(facfd);
 			 return 1;
 		  }
    	 }
-   	 readl.l_type=F_UNLCK;
-	fcntl(facfd, F_SETLKW, &readl);
+   	// readl.l_type=F_UNLCK;
+	//fcntl(facfd, F_SETLKW, &readl);
     	// Check for read errors
     	if (bytesRead == -1) {
-		perror("Error reading file");
+		perror("Error in reading file");
 		close(facfd);
 		return 0;
     	}
 
     	// Close the file
     	close(facfd);
-    	return 0;  	 
+    	return 0;  
 }

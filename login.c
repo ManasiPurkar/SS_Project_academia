@@ -7,13 +7,15 @@
 #include "structures.h"
 
 int login();
-int checkcredentials(struct user u);
+int checkcredentials();
 int checkfaculty(char* loginid,char* password);
+void logout();
 
-
+struct user u;
 //for checking
-int main()
+/*int main()
 {
+	
 	int status=login();
 	if(status)
 	{
@@ -23,12 +25,13 @@ int main()
 	{
 	printf("error in log in\n");
 	}
+	logout();
 	return 0;
-}
+}*/
 
 int login()
 {
-	struct user u;
+	
 	printf("Welcome to login window...\n");
 	printf("Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
   	printf("Enter user type char: \n");
@@ -63,19 +66,20 @@ int login()
         return 0;
     	}
     	u.password[bytesRead-1] = '\0';
-    	int status=checkcredentials(u);
+    	int status=checkcredentials();
     	return status;
     	
 }
 
-int checkcredentials(struct user u)
+int checkcredentials()
 {
 	
 	if(u.usertype=='F')
 	{
 		if(checkfaculty(u.loginid,u.password))
 		{
-		return 1;
+			u.authenticated=1;
+			return 1;
 		}
 		else
 		{
@@ -212,4 +216,15 @@ int checkfaculty(char* loginid,char* password)
 	*/
 		
 }
- 
+void logout()
+{
+	if(u.authenticated==1)
+	{
+		u.authenticated=0;
+		printf("Logged out successfully\n");
+	}
+	else
+	{
+		printf("user not logged in\n");
+	}	
+}

@@ -20,6 +20,7 @@ struct user
 	char loginid[11]; 
         char password[10];
         char usertype; //A or F or S
+        int authenticated;
 };
 
 struct student
@@ -55,7 +56,7 @@ struct course
 	char dept[10];
 	int total_seats;
 	int enrolled_seats;
-	int offered_by;
+	char offered_by[11];
 	int enrolled_stud[200]; //enrolled seats can be max 200
 	int credits;
 };
