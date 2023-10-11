@@ -6,7 +6,7 @@
 
 #include "login.c"
 
-//for testing =v500TVuKW
+//for testing Fac_4=v500TVuKW
 int view_offering_courses();
 int add_new_course();
 int remove_course();

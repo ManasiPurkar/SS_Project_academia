@@ -32,7 +32,6 @@ struct student
 	char name[30];
 	int age;
 	char email[30];
-	char address[100];
 	char homestate[20];
 	int mobno[10];
 	int enrolled_courses[10];

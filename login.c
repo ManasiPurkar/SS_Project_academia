@@ -9,6 +9,7 @@
 int login();
 int checkcredentials();
 int checkfaculty(char* loginid,char* password);
+int checkstudent(char* loginid,char* password);
 void logout();
 
 struct user u;
@@ -92,6 +93,7 @@ int checkcredentials()
 		
 		if(strcmp(u.loginid,a.loginid)==0 && strcmp(u.password,a.password)==0)
 		{
+			u.authenticated=1;
 			return 1;
 		}
 		else
@@ -101,17 +103,18 @@ int checkcredentials()
 		}
 		
 	}
-	/*else if(u.usertype==3)
+	else if(u.usertype=='S')
 	{
 		if(checkstudent(u.loginid,u.password))
 		{
+		u.authenticated=1;
 		return 1;
 		}
 		else
 		{
 		return 0;
 		}
-	}*/
+	}
 	else
 	{
 		perror("incorrect user type\n");
@@ -216,6 +219,55 @@ int checkfaculty(char* loginid,char* password)
 	*/
 		
 }
+
+int checkstudent(char* loginid,char* password)
+{
+ 	
+	struct student stud_detail;
+	int sfd=open("student.txt", O_RDONLY);
+	if(sfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	struct flock readl;
+	readl.l_type=F_RDLCK;
+        readl.l_whence=SEEK_SET;
+	readl.l_start=0;
+	readl.l_len=0;
+	int status=fcntl(sfd,F_SETLKW,&readl);
+	if(status==-1)
+	{
+		perror("error in fcntl\n");
+	}
+	ssize_t bytesRead;
+	// Read and process records in a loop
+   	 while ((bytesRead = read(sfd, &stud_detail, sizeof(struct student))) > 0)
+   	  {
+        // Process the record
+       
+         if(strcmp(stud_detail.loginid,loginid)==0 && strcmp(stud_detail.password,password)==0)
+		  {
+			 return 1;
+		  }
+   	 }
+   	
+	readl.l_type=F_UNLCK;
+	fcntl(sfd, F_SETLKW, &readl);
+    // Check for read errors
+    	if (bytesRead == -1) {
+		perror("Error reading file");
+		close(sfd);
+		return 0;
+    	}
+
+    	// Close the file
+    	close(sfd);
+
+    return 0;
+}
+
+
 void logout()
 {
 	if(u.authenticated==1)
