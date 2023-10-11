@@ -30,10 +30,10 @@ struct user u;
 	return 0;
 }*/
 
-int login()
+int login(char ch)
 {
 	
-	printf("Welcome to login window...\n");
+	/*printf("Welcome to login window...\n");
 	printf("Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
   	printf("Enter user type char: \n");
 	ssize_t bytesRead = read(STDIN_FILENO, &u.usertype, sizeof(u.usertype));
@@ -44,7 +44,8 @@ int login()
 	if (u.usertype != 'A' && u.usertype != 'F' && u.usertype != 'S') {
         printf("Invalid user type. Please enter A, F, or S.\n");
         return 0;
-   	}
+   	}*/
+   	u.usertype=ch;
    	int c;
 
     	// Flush the input buffer by reading and discarding characters until a newline or EOF is encountered
