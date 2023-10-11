@@ -4,7 +4,8 @@
 #include <string.h>
 #include<unistd.h>
 
-#include "login.c"
+//#include "login.c"
+//#include "student.c" (check this at last)
 
 //for testing Fac_4=v500TVuKW
 int view_offering_courses();
@@ -12,7 +13,7 @@ int add_new_course();
 int remove_course();
 int update_course();
 
-int main()
+/*int main()
 {
  	int status=login();
 	if(status)
@@ -36,7 +37,7 @@ int main()
 		printf("error in updating courses\n");
 	}	
 	return 0;
-}
+}*/
 int view_offering_courses()
 {
 	struct faculty faculty_detail;
@@ -469,7 +470,7 @@ int update_course()
     		course_detail.total_seats-=dec_seats;
     		for(int i=course_detail.total_seats; i<course_detail.enrolled_seats; i++)
     		{
-    			//unenroll(enrolled_stud[i]);//unenroll course for student id enrolled_stud[i]
+    			unenroll(course_detail.enrolled_stud[i],course_detail.id); //unenroll course  
     			course_detail.enrolled_stud[i]=0;
     		}
     		if(course_detail.total_seats<course_detail.enrolled_seats)

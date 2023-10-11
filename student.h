@@ -4,13 +4,19 @@
 #include <string.h>
 #include<unistd.h>
 
-#include "login.c"
+//#include "login.c"
 
 //PHD_2 : _42ckV*@q
+//loginid=MT_3
+//password=Ppvk78aqt
+
 int view_courses();
 int enroll_course();
 int unenroll_course();
 int unenroll(int stdid,int cid);
+int view_enrolled_courses();
+
+/*
 int main()
 {
  	int status=login();
@@ -22,20 +28,20 @@ int main()
 	{
 	printf("error in log in\n");
 	}
-	if(!view_courses())
+	if(!view_enrolled_courses())
 	{
 		printf("error in view offering courses\n");
 	}
-	/*if(!add_new_course())
+	if(!add_new_course())
 	{
 		printf("error in adding courses\n");
 	}
 	if(!update_course())
 	{
 		printf("error in updating courses\n");
-	}*/	
+	}	
 	return 0;
-}
+}*/
 int view_courses()
 {
 	struct course course_detail;
@@ -67,9 +73,10 @@ int view_courses()
        		printf("enrolled_seats= %d\n",course_detail.enrolled_seats);
        		printf("credits= %d\n",course_detail.credits);
        		printf("offered by= %s\n",course_detail.offered_by);
+       		printf("enrolled student ids=");
        		for(int i=0;i<course_detail.enrolled_seats;i++) 
        		{
-       		printf("enrolled stud ids= %d ",course_detail.enrolled_stud[i]);
+       		printf(" %d ",course_detail.enrolled_stud[i]);
        		}
        		printf("\n");
    	 }
@@ -151,17 +158,9 @@ int enroll_course()
 			{
 				perror("error in fcntl\n");
 			}
-			/*char delimiter[] = "_";
-			char *token = strtok(u.loginid, delimiter); //to get student id from its login id
-    			while (token != NULL) {
-      			  // Move to the next token
-      			  token = strtok(NULL, delimiter);
-       			 if (token != NULL) {
-         		   		stdid=atoi(token);
-        			}
-  			  }*/
+			
   			int empty=-1;
-  			for(int i=0;i<course_detail.enrolled_seats;i++)
+  			for(int i=0;i<200;i++)
   			{
   				if(course_detail.enrolled_stud[i]==stdid)
   				{
@@ -371,4 +370,56 @@ int unenroll(int stdid,int cid)
 			 return 1;
 		}
    	 return 0;	
+}
+int view_enrolled_courses()
+{
+	ssize_t bytesRead;
+	
+	struct student stud_detail;
+	int sfd=open("student.txt", O_RDWR);
+	if(sfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	int studfound=0;
+
+	while ((bytesRead = read(sfd, &stud_detail, sizeof(struct student))) > 0)
+   	  {
+       		 // Process the record
+        	  if(strcmp(stud_detail.loginid,u.loginid)==0)
+		  {
+		  	studfound=1;
+		  	break;
+		  }
+   	 }
+   	if(studfound)
+   	{
+   			int offset=lseek(sfd,-sizeof(struct student),SEEK_CUR);
+			if(offset==-1)
+			{
+				perror("error in reaching required record\n");
+				return 0;
+			}
+			struct flock readl;
+			 readl.l_type=F_RDLCK;
+			 readl.l_whence=SEEK_CUR;
+		  	 readl.l_start=0;
+		  	 readl.l_len=sizeof(struct student);
+		 	 int status=fcntl(sfd,F_SETLKW,&readl);
+		 	 if(status==-1)
+			{
+				perror("error in fcntl\n");
+			}
+			printf("enrolled courses= ");
+			for(int i=0;i<10;i++)
+  			{
+				printf("%d ",stud_detail.enrolled_courses[i]);
+			}
+			 readl.l_type=F_UNLCK;
+			 fcntl(sfd, F_SETLKW, &readl);
+			 close(sfd);
+			 return 1;
+   	}
+   	return 0;
 }

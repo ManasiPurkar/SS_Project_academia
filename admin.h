@@ -13,9 +13,9 @@ int addStudent();
 int viewStudent();
 int modifyStudent();
 //for checking
-int main()
+/*int main()
 {
-	int status=viewStudent();
+	int status=addStudent();
 	if(status)
 	{
 		printf("successfully added faculty\n");
@@ -25,7 +25,7 @@ int main()
 		printf("error increating faculty\n");
 	}
 	return 0;
-}
+}*/
 
 int addfaculty()
 {
