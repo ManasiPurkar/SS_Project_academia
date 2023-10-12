@@ -5,6 +5,7 @@
 #include<stdlib.h>
 
 #include "structures.h"
+#include "admin_menu.h"
 
 int login();
 int checkcredentials();
@@ -30,45 +31,114 @@ struct user u;
 	return 0;
 }*/
 
-int login(char ch)
+int login(int desc)
 {
-	
-	/*printf("Welcome to login window...\n");
-	printf("Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
-  	printf("Enter user type char: \n");
-	ssize_t bytesRead = read(STDIN_FILENO, &u.usertype, sizeof(u.usertype));
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+	strcpy(writeBuffer,"Welcome to login window...\n");
+	strcat(writeBuffer,"Available users are 1.Admin(A)  2.Faculty(F)   3.Student(S)\n");
+  	strcat(writeBuffer,"Enter user type char: \n");
+  	
+	/*ssize_t bytesRead = read(STDIN_FILENO, &u.usertype, sizeof(u.usertype));
 	if (bytesRead <= 0) {
         perror("Error in storing usertype\n");
         return 0;
-    	}
+    	}*/
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing options to client!");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading client's choice for ADMIN_MENU");
+                return 0;
+        }
+	
+	u.usertype=readBuffer[0];
+	bzero(writeBuffer, sizeof(writeBuffer));
 	if (u.usertype != 'A' && u.usertype != 'F' && u.usertype != 'S') {
-        printf("Invalid user type. Please enter A, F, or S.\n");
+        strcpy(writeBuffer,"Invalid user type. Please enter A, F, or S.\n");
+        writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         return 0;
-   	}*/
-   	u.usertype=ch;
-   	int c;
+   	}
+   	
+   	bzero(writeBuffer, sizeof(writeBuffer));
+    	strcpy(writeBuffer,"Enter Login id: \n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing options to client!");
+                return 0;
+        }
+    	bzero(readBuffer, sizeof(readBuffer));
+   	
+	/*int c;
 
     	// Flush the input buffer by reading and discarding characters until a newline or EOF is encountered
 	while ((c = getchar()) != '\n' && c != EOF) {
 		// Discard the character
-	    }
-    	printf("Enter Login id: \n");
-    	bytesRead = read(STDIN_FILENO, u.loginid, sizeof(u.loginid));
+	    }*/
+	/*printf("BYEE");
+	bzero(writeBuffer, sizeof(writeBuffer));
+	printf("BYEE");
+    	strcpy(writeBuffer,"Enter Login id: \n");
+    	printf("BYEE");
+    	bzero(readBuffer, sizeof(readBuffer));*/
+    	/*bytesRead = read(STDIN_FILENO, u.loginid, sizeof(u.loginid));
 	// Check if reading was successful 
     	if (bytesRead <= 1) {
         perror("Error in storing login id\n");
         return 0;
-    	}
-    	u.loginid[bytesRead-1] = '\0';
-    	printf("Enter password: \n");
-    	bytesRead = read(STDIN_FILENO, u.password, sizeof(u.password));
+    	}*/
+    	
+    	readBytes = read(desc, readBuffer, sizeof(readBuffer));
+    	strcpy(u.loginid,readBuffer);
+    	u.loginid[readBytes-1] = '\0';
+    	bzero(writeBuffer, sizeof(writeBuffer));
+    	strcpy(writeBuffer,"Enter password: \n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+    	bzero(readBuffer, sizeof(readBuffer));
+    	readBytes = read(desc, readBuffer, sizeof(readBuffer));
+    	strcpy(u.password,readBuffer);
+    	u.password[readBytes-1] = '\0';
+    	/*printf("Enter password: \n");
+    	//bytesRead = read(STDIN_FILENO, u.password, sizeof(u.password));
 	// Check if reading was successful 
     	if (bytesRead <= 1) {
         perror("Error in storing password\n");
         return 0;
-    	}
-    	u.password[bytesRead-1] = '\0';
+    	}*/
+    	
     	int status=checkcredentials();
+    	if(status)
+    	{
+    	bzero(writeBuffer, sizeof(writeBuffer));
+    	strcpy(writeBuffer,"lOGIN SUCCESSFUL \n");
+    	write(desc, writeBuffer, strlen(writeBuffer));
+    	if(u.usertype=='A')
+    	{
+    		int status=admin_menu(desc);
+    		if(status==0)
+    		{
+    			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"Admin menu cannot be shown \n");
+    			write(desc, writeBuffer, strlen(writeBuffer));
+    		}
+    	}
+    	/*do same for stud and admin*/
+    	}
+    	else
+    	{
+    		bzero(writeBuffer, sizeof(writeBuffer));
+    		strcpy(writeBuffer,"lOGIN FAILED \n");
+    		write(desc, writeBuffer, strlen(writeBuffer));
+    	}
     	return status;
     	
 }
@@ -80,7 +150,7 @@ int checkcredentials()
 	{
 		if(checkfaculty(u.loginid,u.password))
 		{
-			u.authenticated=1;
+			
 			return 1;
 		}
 		else
@@ -94,7 +164,7 @@ int checkcredentials()
 		
 		if(strcmp(u.loginid,a.loginid)==0 && strcmp(u.password,a.password)==0)
 		{
-			u.authenticated=1;
+			
 			return 1;
 		}
 		else
@@ -108,7 +178,7 @@ int checkcredentials()
 	{
 		if(checkstudent(u.loginid,u.password))
 		{
-		u.authenticated=1;
+		
 		return 1;
 		}
 		else
@@ -268,7 +338,7 @@ int checkstudent(char* loginid,char* password)
     return 0;
 }
 
-
+/*
 void logout()
 {
 	if(u.authenticated==1)
@@ -280,4 +350,4 @@ void logout()
 	{
 		printf("user not logged in\n");
 	}	
-}
+}*/

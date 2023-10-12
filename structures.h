@@ -20,7 +20,7 @@ struct user
 	char loginid[11]; 
         char password[10];
         char usertype; //A or F or S
-        int authenticated;
+       
 };
 
 struct student
