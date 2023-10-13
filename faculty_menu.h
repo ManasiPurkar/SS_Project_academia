@@ -2,19 +2,19 @@
 #include <unistd.h>
 
 //#include "login.h"
-#include "admin.h"
+#include "faculty.h"
 
 
-int admin_menu(int desc)
+int faculty_menu(int desc)
 {
 	while(1)
 	{
 	char readBuffer[1000],writeBuffer[1000];
    	ssize_t readBytes, writeBytes; 
    	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
-	strcpy(writeBuffer,"______Welcome Admin_______\n");
+	strcpy(writeBuffer,"______Welcome Faculty_______\n");
 	strcat(writeBuffer,"Choose one from below\n");
-	strcat(writeBuffer,"1.Add student\n 2.View student\n 3.Add faculty\n 4.View faculty\n 5.Modify student\n 6.Modify faculty\n 7.Logout\n");
+	strcat(writeBuffer,"1.View offering courses\n 2.Add new course\n 3.Remove course\n 4.Update course\n 5.Logout\n");
 	strcat(writeBuffer,"Enter Option number: \n");
 	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -42,54 +42,38 @@ int admin_menu(int desc)
 	switch(opt)
 	{
 		case 1:
-			if(!addStudent(desc))
+			if(!view_offering_courses(desc))
 			{
 			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in add student\n");
+			strcat(writeBuffer,"Error in showing offering courses\n");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			}
 			break;
 		case 2:
-			if(!viewStudent(desc))
+			if(!add_new_course(desc))
 			{
 			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in view student\n");
+			strcat(writeBuffer,"Error in adding new course\n");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			}
 			break;
 		case 3:
-			if(!addfaculty(desc))
+			if(!remove_course(desc))
 			{
 			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in add faculty\n");
+			strcat(writeBuffer,"Error in removing course\n");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			}
 			break;
 		case 4:
-			if(!viewFaculty(desc))
+			if(!update_course(desc))
 			{
 			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in view faculty\n");
+			strcat(writeBuffer,"Error in updating course\n");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			}
 			break;
 		case 5:
-			if(!modifyStudent(desc))
-			{
-			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in modify student\n");
-			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
-			}
-			break;
-		case 6:
-			if(!modifyFaculty(desc))
-			{
-			bzero(writeBuffer, sizeof(writeBuffer));
-			strcat(writeBuffer,"Error in modify faculty\n");
-			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
-			}
-			break;
-		case 7:
 			authenticated=0;
 			break;
 		default:
@@ -104,8 +88,7 @@ int admin_menu(int desc)
 	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 	break;
 	}
-	
-	}
+      }
 	return 1;
 	
 }

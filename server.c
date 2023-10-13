@@ -10,6 +10,9 @@
 #define PORT 8080
 // includes
 #include "login.h"
+#include "admin_menu.h"
+#include "faculty_menu.h"
+#include "student_menu.h"
 
 int clients[1000];
 int noClients = 0;
@@ -18,6 +21,8 @@ int noClients = 0;
 
 void main()
 {
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
     int socketFileDescriptor, socketBindStatus, socketListenStatus, connfd;
     struct sockaddr_in serverAddress, clientAddress;
 
@@ -67,6 +72,39 @@ void main()
             // Child will enter this branch
             clients[noClients] = connfd;
             int status=login(connfd);
+            if(status)
+            {
+            	if(u.usertype=='A')
+    		{
+    		int status=admin_menu(connfd);
+    		if(status==0)
+    		{
+    			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"Admin menu cannot be shown \n");
+    			write(connfd, writeBuffer, strlen(writeBuffer));
+    		}
+    		}
+		else if(u.usertype=='F')
+    		{
+    		int status=faculty_menu(connfd);
+    		if(status==0)
+    		{
+    			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"Faculty menu cannot be shown \n");
+    			write(connfd, writeBuffer, strlen(writeBuffer));
+    		}
+    		}
+    		else if(u.usertype=='S')
+    		{
+    		int status=student_menu(connfd);
+    		if(status==0)
+    		{
+    			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"Student menu cannot be shown \n");
+    			write(connfd, writeBuffer, strlen(writeBuffer));
+    		}
+    		}
+            }
             close(connfd);
             exit(0);
         }

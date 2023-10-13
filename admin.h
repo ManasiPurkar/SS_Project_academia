@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include<unistd.h>
-
 #include "common.h"
+
 
 int addfaculty();
 int viewFaculty();
@@ -188,13 +188,16 @@ int addfaculty(int desc)
     	bzero(writeBuffer, sizeof(writeBuffer));
 	
 	ssize_t bytesWrite=write(facfd,&newf,sizeof(struct faculty));
-	if (bytesWrite <= 0){
-        perror("Error in writing struct\n");
-        return 0;
+	if (bytesWrite > 0){
+         bzero(readBuffer, sizeof(readBuffer));
+    	 strcpy(writeBuffer,"Successfully Added\n");
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	close(facfd);
+        return 1;
     	}
     	
     	close(facfd);
-	return 1;
+	return 0;
 }
 
 int modifyFaculty(int desc)
@@ -483,7 +486,7 @@ int viewFaculty(int desc)
     	return 0;  
 }
 
-int addStudent()
+int addStudent(int desc)
 {
 	ssize_t readb;
 	char readBuffer[1000],writeBuffer[1000];
@@ -610,6 +613,23 @@ int addStudent()
     	}
 	news.age = atoi(age);
 	*/
+	bzero(readBuffer, sizeof(readBuffer));
+    	strcpy(writeBuffer,"Enter name: \n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        strcpy(news.name,readBuffer);
+    	news.name[readBytes-1] = '\0';
 	
 	bzero(readBuffer, sizeof(readBuffer));
     	strcpy(writeBuffer,"Enter email: \n");
@@ -628,6 +648,24 @@ int addStudent()
         }
         strcpy(news.email,readBuffer);
     	news.email[readBytes-1] = '\0';
+    	
+    	bzero(readBuffer, sizeof(readBuffer));
+    	strcpy(writeBuffer,"Enter home state: \n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        strcpy(news.homestate,readBuffer);
+    	news.homestate[readBytes-1] = '\0';
     	//char mob[11];
     	bzero(readBuffer, sizeof(readBuffer));
     	strcpy(writeBuffer,"Enter mobile number: \n");
@@ -684,21 +722,59 @@ int addStudent()
     	printf("%d",news.mobno[i]);
     	}
 	printf("\n");*/
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%d","id=", news.id);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","login id=", news.loginid);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","password=", news.password);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","name=", news.name);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","email=", news.email);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","home state=", news.homestate);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%d","age=", news.age);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+    	strcpy(writeBuffer,"\nmobile=");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+    	bzero(writeBuffer, sizeof(writeBuffer));
+    	
+    	 for (int i = 0; i < 10; i++) {
+        // Format each integer into a string and append it to the writeBuffer
+        char temp[8];  // Assumes a maximum of 8 digits for each integer
+        sprintf(temp, "%d", news.mobno[i]);
+        strcat(writeBuffer, temp);
+	}
+	strcat(writeBuffer,"\n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+    	bzero(writeBuffer, sizeof(writeBuffer));
 	
 	
 	ssize_t bytesWrite=write(sfd,&news,sizeof(struct student));
-	if (bytesWrite <= 0){
-        perror("Error in writing struct\n");
-        return 0;
+	if (bytesWrite > 0){
+         bzero(readBuffer, sizeof(readBuffer));
+    	strcpy(writeBuffer,"Successfully Added\n");
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        close(sfd);
+        return 1;
     	}
     	
     	close(sfd);
-	return 1;
+	return 0;
 }
 
-int viewStudent()
+int viewStudent(int desc)
 {
-	ssize_t bytesRead;
+	/*ssize_t bytesRead;
 	char reqloginid[11];
 	printf("Enter login id of student you want to view: \n");
 	bytesRead = read(STDIN_FILENO, reqloginid, sizeof(reqloginid));
@@ -707,7 +783,29 @@ int viewStudent()
         perror("Error in storing login id\n");
         return 0;
     	}
-    	reqloginid[bytesRead-1]='\0';
+    	reqloginid[bytesRead-1]='\0';*/
+    	ssize_t bytesRead;
+	char reqloginid[11];
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to View Student\n");
+   	strcat(writeBuffer,"Enter login id of student you want to view: \n");
+   	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        strcpy(reqloginid,readBuffer);
+    	reqloginid[readBytes-1]='\0';
 	struct student stud_detail;
 	int sfd=open("student.txt", O_RDONLY);
 	if(sfd==-1)
@@ -737,7 +835,7 @@ int viewStudent()
 			{
 				perror("error in fcntl\n");
 			}
-			 printf("id= %d\n",stud_detail.id);
+			/* printf("id= %d\n",stud_detail.id);
 			 printf("course= %s\n",stud_detail.course);
 			 printf("loginid= %s\n",stud_detail.loginid);
 			 printf("name= %s\n",stud_detail.name);
@@ -754,8 +852,52 @@ int viewStudent()
 			 for(int i=0;i<10;i++)
 			 {
 			    	printf("%d",stud_detail.enrolled_courses[i]);
-			 }
-			  readl.l_type=F_UNLCK;
+			 }*/
+			 
+			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%d","id=", stud_detail.id);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","course=", stud_detail.course);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","login id=", stud_detail.loginid);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","name=", stud_detail.name);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","email=", stud_detail.email);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"\nmobile=");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+    			bzero(writeBuffer, sizeof(writeBuffer));	
+    			for (int i = 0; i <10; i++) {
+       			 // Format each integer into a string and append it to the writeBuffer
+       			 char temp[8];  // Assumes a maximum of 8 digits for each integer
+       			 sprintf(temp, "%d", stud_detail.mobno[i]);
+       			 strcat(writeBuffer, temp);
+			}
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+    			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s","enrolled courses=");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));	
+    			for (int i = 0; i <10; i++) {
+       			 // Format each integer into a string and append it to the writeBuffer
+       			 char temp[8];  // Assumes a maximum of 8 digits for each integer
+       			 sprintf(temp, "%d", stud_detail.enrolled_courses[i]);
+       			 strcat(writeBuffer, temp);
+       			 if (i <9) {
+            			strcat(writeBuffer, " ");
+       			 }
+			}
+			strcat(writeBuffer,"\n");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+				 
+			 
+			 readl.l_type=F_UNLCK;
 			 fcntl(sfd, F_SETLKW, &readl);
 			 close(sfd);
 			 return 1;
@@ -770,12 +912,15 @@ int viewStudent()
     	}
 
     	// Close the file
+    	bzero(readBuffer, sizeof(readBuffer));
+    	strcpy(writeBuffer,"Failed to view student\n");
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
     	close(sfd);
     	return 0;  
 }
-int modifyStudent()
+int modifyStudent(int desc)
 {
-	ssize_t bytesRead;
+	/*ssize_t bytesRead;
 	char reqloginid[11];
 	printf("Enter login id of student you want to modify: \n");
 	bytesRead = read(STDIN_FILENO, reqloginid, sizeof(reqloginid));
@@ -784,7 +929,30 @@ int modifyStudent()
         perror("Error in storing login id\n");
         return 0;
     	}
-    	reqloginid[bytesRead-1]='\0';
+    	reqloginid[bytesRead-1]='\0';*/
+    	ssize_t bytesRead;
+	char reqloginid[11];
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to Modify Student\n");
+   	strcat(writeBuffer,"Enter login id of student you want to modify: \n");
+    	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        strcpy(reqloginid,readBuffer);
+    	reqloginid[readBytes-1]='\0';
+    	bzero(readBuffer, sizeof(readBuffer));
 	struct student stud_detail;
 	int sfd=open("student.txt", O_RDWR);
 	if(sfd==-1)
@@ -814,13 +982,31 @@ int modifyStudent()
 			{
 				perror("error in fcntl\n");
 			}
-			printf("Enter course: \n");
+			/*printf("Enter course: \n");
 			 bytesRead = read(STDIN_FILENO, stud_detail.course, sizeof(stud_detail.course));
 			if (bytesRead <= 1){
       			  perror("Error in storing name\n"); //equal to 1 for handling empty name
        			  return 0;
     			}
-    			stud_detail.course[bytesRead-1] = '\0';
+    			stud_detail.course[bytesRead-1] = '\0';*/
+    			
+    			strcat(writeBuffer,"Enter course: \n");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+      			 if (writeBytes == -1)
+       			 {
+           		     perror("Error while writing data to client!");
+             		     return 0;
+      			  }
+       			 bzero(writeBuffer, sizeof(writeBuffer));
+      		         readBytes = read(desc, readBuffer, sizeof(readBuffer));
+     		          if (readBytes == -1)
+     		         {
+         		       perror("Error while reading");
+            		       return 0;
+      			  }
+      		         strcpy(stud_detail.course,readBuffer);
+			stud_detail.course[readBytes-1] = '\0';
+    			bzero(readBuffer, sizeof(readBuffer));
     				
     			char nid[10];
 			sprintf(nid,"%d",stud_detail.id);
@@ -839,22 +1025,58 @@ int modifyStudent()
     			strcat(result, nid);
     			strcpy(stud_detail.loginid,result);
 	
-			 printf("Enter name: \n");
+			/*printf("Enter name: \n");
 			bytesRead = read(STDIN_FILENO, stud_detail.name, sizeof(stud_detail.name));
 			if (bytesRead <= 1){
       			  perror("Error in storing name\n"); //equal to 1 for handling empty name
        			  return 0;
     			}
     			stud_detail.name[bytesRead-1] = '\0';
-    			fflush(stdin);
-    			printf("Enter email: \n");
+    			fflush(stdin);*/
+    			strcat(writeBuffer,"Enter name: \n");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+      			 if (writeBytes == -1)
+       			 {
+           		     perror("Error while writing data to client!");
+             		     return 0;
+      			  }
+       			 bzero(writeBuffer, sizeof(writeBuffer));
+      		         readBytes = read(desc, readBuffer, sizeof(readBuffer));
+     		          if (readBytes == -1)
+     		         {
+         		       perror("Error while reading");
+            		       return 0;
+      			  }
+      		        strcpy(stud_detail.name,readBuffer);
+			stud_detail.name[readBytes-1] = '\0';
+    			bzero(readBuffer, sizeof(readBuffer));
+    			
+    			/*printf("Enter email: \n");
 			bytesRead = read(STDIN_FILENO, stud_detail.email, sizeof(stud_detail.email));
 			if (bytesRead <= 1){
        				perror("Error in storing email\n");
         			return 0;
     			} 
-    			stud_detail.email[bytesRead-1] = '\0';
-    			char mob[11];
+    			stud_detail.email[bytesRead-1] = '\0';*/
+    			strcat(writeBuffer,"Enter email: \n");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+      			 if (writeBytes == -1)
+       			 {
+           		     perror("Error while writing data to client!");
+             		     return 0;
+      			  }
+       			 bzero(writeBuffer, sizeof(writeBuffer));
+      		         readBytes = read(desc, readBuffer, sizeof(readBuffer));
+     		          if (readBytes == -1)
+     		         {
+         		       perror("Error while reading");
+            		       return 0;
+      			  }
+      		         strcpy(stud_detail.email,readBuffer);
+			stud_detail.email[readBytes-1] = '\0';
+    			bzero(readBuffer, sizeof(readBuffer));
+    			
+    			/*char mob[11];
     			printf("Enter mobile number: \n");
 			bytesRead = read(STDIN_FILENO, mob, sizeof(mob));
     			if (bytesRead <= 10){
@@ -864,16 +1086,43 @@ int modifyStudent()
     			for(int i=0;i<10;i++)
     			{
     				stud_detail.mobno[i]=mob[i]- '0';
+    			}*/
+    			bzero(readBuffer, sizeof(readBuffer));
+    			strcpy(writeBuffer,"Enter mobile number: \n");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+       		        if (writeBytes == -1)
+       			 {
+            		    perror("Error while writing");
+             		    return 0;
+      			  }
+       			 bzero(writeBuffer, sizeof(writeBuffer));
+       			 readBytes = read(desc, readBuffer, sizeof(readBuffer));
+       			 if (readBytes == -1)
+       			  {
+             		   perror("Error while reading");
+              		  return 0;
+        		 }
+    			 for(int i=0;i<10;i++)
+    			{
+    			 stud_detail.mobno[i]=readBuffer[i]- '0';
     			}
+    			
+    			
     			ssize_t bytesWrite=write(sfd,&stud_detail,sizeof(struct student));
-			if (bytesWrite <= 0){
-       			 perror("Error in writing struct\n");
-      			  return 0;
-    			}
 			 writel.l_type=F_UNLCK;
 			 fcntl(sfd, F_SETLKW, &writel);
 			 close(sfd);
-			 return 1;
+			 if (bytesWrite > 0){
+       			  bzero(readBuffer, sizeof(readBuffer));
+    			  strcpy(writeBuffer,"Successfully modified student\n");
+			  writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+      			  return 1;
+    			}
+    			else 
+    			{
+    			 perror("error in writing struct\n");
+			 return 0;
+			 }
 		  }
    	 }
    	 if (bytesRead == -1) {

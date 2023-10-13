@@ -9,12 +9,22 @@
 //PHD_2 : _42ckV*@q
 //loginid=MT_3
 //password=Ppvk78aqt
+/*
+login id=MT_6
+password=2azq(9E&U
+login id=PHD_7
+password=ye73SSdod
+login id=MS_8
+password=o@WYd&AIa
 
-int view_courses();
-int enroll_course();
-int unenroll_course();
+
+*/
+
+int view_courses(int desc);
+int enroll_course(int desc);
+int unenroll_course(int desc);
 int unenroll(int stdid,int cid);
-int view_enrolled_courses();
+int view_enrolled_courses(int desc);
 
 /*
 int main()
@@ -42,8 +52,10 @@ int main()
 	}	
 	return 0;
 }*/
-int view_courses()
+int view_courses(int desc)
 {
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
 	struct course course_detail;
 	int cfd=open("course.txt", O_RDONLY);
 	if(cfd==-1)
@@ -66,7 +78,7 @@ int view_courses()
 	 while ((bytesRead = read(cfd, &course_detail, sizeof(struct course))) > 0)
    	  {
         // Print the record
-       		printf("id= %d\n",course_detail.id);
+       		/*printf("id= %d\n",course_detail.id);
        		printf("name= %s\n",course_detail.name);
        		printf("dept= %s\n",course_detail.dept);
        		printf("total_seats= %d\n",course_detail.total_seats);
@@ -78,7 +90,38 @@ int view_courses()
        		{
        		printf(" %d ",course_detail.enrolled_stud[i]);
        		}
-       		printf("\n");
+       		printf("\n");*/
+       		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%d","id=", course_detail.id);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%s","name=", course_detail.name);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%s","dept=", course_detail.dept);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%d","credits=", course_detail.credits);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%s","offered by=", course_detail.offered_by);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s","Enrolled student ids=");
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));	
+    		for (int i = 0; i <course_detail.enrolled_seats; i++) {
+       			 // Format each integer into a string and append it to the writeBuffer
+       			 char temp[8];  // Assumes a maximum of 8 digits for each integer
+       			 sprintf(temp, "%d", course_detail.enrolled_stud[i]);
+       			 strcat(writeBuffer, temp);
+       			 if (i <(course_detail.enrolled_seats-1)) {
+            			strcat(writeBuffer, " ");
+       			 }
+		}
+		strcat(writeBuffer,"\n");
+    		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+       		    		
    	 }
    	 readl.l_type=F_UNLCK;
 	fcntl(cfd, F_SETLKW, &readl);
@@ -95,9 +138,31 @@ int view_courses()
     return 1;
 }
 
-int enroll_course()
+int enroll_course(int desc)
 {	
+	
 	int cid;
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to Enroll course\n");
+   	strcat(writeBuffer,"Enter course id which you want to enroll= \n");
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        cid = atoi(readBuffer);
+        bzero(readBuffer, sizeof(readBuffer));
+	/*int cid;
 	printf("Enter course id which you want to enroll= \n");
 	
 	char reqcid[10];
@@ -106,7 +171,7 @@ int enroll_course()
         	return 0;
     	}
 	cid = atoi(reqcid);
-	
+	*/
 	ssize_t bytesRead;
 	//printf("reqc=%d\n",cid);
 	struct course course_detail;
@@ -214,6 +279,7 @@ int enroll_course()
 			if(stud_detail.enrolled_courses[i]==0)
 			{
 				stud_detail.enrolled_courses[i]=cid;
+				break;
 			}
 			}
 			ssize_t bytesWrite=write(sfd,&stud_detail,sizeof(struct student));
@@ -229,9 +295,9 @@ int enroll_course()
    	 return 0;	
 }
 
-int unenroll_course()
+int unenroll_course(int desc)
 {
-	int cid;
+	/*int cid;
 	printf("Enter course id which you want to unenroll= \n");
 	
 	char reqcid[10];
@@ -239,7 +305,28 @@ int unenroll_course()
        		 perror("Error in reading course id");
         	return 0;
     	}
-	cid = atoi(reqcid);
+	cid = atoi(reqcid);*/
+	int cid;
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to Enroll course\n");
+   	strcat(writeBuffer,"Enter course id which you want to enroll= \n");
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+        if (writeBytes == -1)
+        {
+                perror("Error while writing");
+                return 0;
+        }
+        bzero(writeBuffer, sizeof(writeBuffer));
+        readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        if (readBytes == -1)
+         {
+                perror("Error while reading");
+                return 0;
+        }
+        cid = atoi(readBuffer);
+        bzero(readBuffer, sizeof(readBuffer));
 	int stdid;
 	char delimiter[] = "_";
 	char *token = strtok(u.loginid, delimiter); //to get student id from its login id
@@ -357,6 +444,7 @@ int unenroll(int stdid,int cid)
 			if(stud_detail.enrolled_courses[i]==cid)
 			{
 				stud_detail.enrolled_courses[i]=0;
+				break;
 			}
 			}
 			ssize_t bytesWrite=write(sfd,&stud_detail,sizeof(struct student));
@@ -371,10 +459,12 @@ int unenroll(int stdid,int cid)
 		}
    	 return 0;	
 }
-int view_enrolled_courses()
+int view_enrolled_courses(int desc)
 {
 	ssize_t bytesRead;
-	
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+   	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
 	struct student stud_detail;
 	int sfd=open("student.txt", O_RDWR);
 	if(sfd==-1)
@@ -411,11 +501,26 @@ int view_enrolled_courses()
 			{
 				perror("error in fcntl\n");
 			}
-			printf("enrolled courses= ");
+			/*printf("enrolled courses= ");
 			for(int i=0;i<10;i++)
   			{
 				printf("%d ",stud_detail.enrolled_courses[i]);
+			}*/
+			sprintf(writeBuffer, "\n%s","Enrolled courses=");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			bzero(writeBuffer, sizeof(writeBuffer));	
+    			for (int i = 0; i <10; i++) {
+       			 // Format each integer into a string and append it to the writeBuffer
+       			 char temp[8];  // Assumes a maximum of 8 digits for each integer
+       			 sprintf(temp, "%d", stud_detail.enrolled_courses[i]);
+       			 strcat(writeBuffer, temp);
+       			 if (i < 9) {
+            			strcat(writeBuffer, " ");
+       			 }
 			}
+			strcat(writeBuffer,"\n");
+    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			
 			 readl.l_type=F_UNLCK;
 			 fcntl(sfd, F_SETLKW, &readl);
 			 close(sfd);

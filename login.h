@@ -3,9 +3,10 @@
 #include <string.h>
 #include <unistd.h>
 #include<stdlib.h>
-
 #include "structures.h"
-#include "admin_menu.h"
+//#include "admin_menu.h"
+//#include "faculty_menu.h"
+//#include "flow.h"
 
 int login();
 int checkcredentials();
@@ -13,7 +14,9 @@ int checkfaculty(char* loginid,char* password);
 int checkstudent(char* loginid,char* password);
 void logout();
 
+
 struct user u;
+int success=0;
 //for checking
 /*int main()
 {
@@ -121,7 +124,10 @@ int login(int desc)
     	bzero(writeBuffer, sizeof(writeBuffer));
     	strcpy(writeBuffer,"lOGIN SUCCESSFUL \n");
     	write(desc, writeBuffer, strlen(writeBuffer));
-    	if(u.usertype=='A')
+    	//success=1;
+    	/*do same for stud and admin*/
+    	/*currentuser(&u);
+    	if(cu.usertype=='A')
     	{
     		int status=admin_menu(desc);
     		if(status==0)
@@ -131,7 +137,16 @@ int login(int desc)
     			write(desc, writeBuffer, strlen(writeBuffer));
     		}
     	}
-    	/*do same for stud and admin*/
+	else if(cu.usertype=='F')
+    	{
+    		int status=faculty_menu(desc);
+    		if(status==0)
+    		{
+    			bzero(writeBuffer, sizeof(writeBuffer));
+    			strcpy(writeBuffer,"Faculty menu cannot be shown \n");
+    			write(desc, writeBuffer, strlen(writeBuffer));
+    		}
+    	}*/
     	}
     	else
     	{
