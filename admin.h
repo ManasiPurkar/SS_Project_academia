@@ -1,3 +1,8 @@
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- Admin fun
+*/
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
