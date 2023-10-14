@@ -25,7 +25,7 @@ int enroll_course(int desc);
 int unenroll_course(int desc);
 int unenroll(int stdid,int cid);
 int view_enrolled_courses(int desc);
-
+int change_password_stud(int desc);
 /*
 int main()
 {
@@ -107,7 +107,13 @@ int view_courses(int desc)
 		sprintf(writeBuffer, "\n%s%s","offered by=", course_detail.offered_by);
 		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 		bzero(writeBuffer, sizeof(writeBuffer));
-		sprintf(writeBuffer, "\n%s","Enrolled student ids=");
+		sprintf(writeBuffer, "\n%s%d","Total Seats=", course_detail.total_seats);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		sprintf(writeBuffer, "\n%s%d","Enrolled Seats=", course_detail.enrolled_seats);
+		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+		bzero(writeBuffer, sizeof(writeBuffer));
+		/*sprintf(writeBuffer, "\n%s","Enrolled student ids=");
 		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 		bzero(writeBuffer, sizeof(writeBuffer));	
     		for (int i = 0; i <course_detail.enrolled_seats; i++) {
@@ -118,10 +124,10 @@ int view_courses(int desc)
        			 if (i <(course_detail.enrolled_seats-1)) {
             			strcat(writeBuffer, " ");
        			 }
-		}
+		}*/
 		strcat(writeBuffer,"\n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
-       		    		
+       		bzero(writeBuffer, sizeof(writeBuffer));  		
    	 }
    	 readl.l_type=F_UNLCK;
 	fcntl(cfd, F_SETLKW, &readl);
@@ -229,7 +235,9 @@ int enroll_course(int desc)
   			{
   				if(course_detail.enrolled_stud[i]==stdid)
   				{
-  					printf("course already enrolled\n");
+  					bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   					strcpy(writeBuffer,"Course already enrolled\n");
+					writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
   					return 0;
   				}
   				else if(empty==-1 && course_detail.enrolled_stud[i]==0)
@@ -346,8 +354,10 @@ int unenroll_course(int desc)
 }
 int unenroll(int stdid,int cid)
 {
-	ssize_t bytesRead;
+	
 	//printf("reqc=%d\n",cid);
+	printf("hello");
+	ssize_t bytesRead;
 	struct course course_detail;
 	struct student stud_detail;
 	int cfd=open("course.txt", O_RDWR);
@@ -396,7 +406,7 @@ int unenroll(int stdid,int cid)
 			{
 				perror("error in fcntl\n");
 			}
-			for(int i=0;i<course_detail.enrolled_seats;i++)
+			for(int i=0;i<course_detail.total_seats;i++)
   			{
   				if(course_detail.enrolled_stud[i]==stdid)
   				{
@@ -455,8 +465,12 @@ int unenroll(int stdid,int cid)
 			 writel.l_type=F_UNLCK;
 			 fcntl(sfd, F_SETLKW, &writel);
 			 close(sfd);
+			 printf("hello");			
 			 return 1;
 		}
+		
+	printf("byee");
+	
    	 return 0;	
 }
 int view_enrolled_courses(int desc)
@@ -528,3 +542,76 @@ int view_enrolled_courses(int desc)
    	}
    	return 0;
 }
+
+int change_password_stud(int desc)
+{
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+	struct student stud_detail;
+	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to Change Password\n");
+	int sfd=open("student.txt", O_RDWR);
+	if(sfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	ssize_t bytesRead;
+	 while ((bytesRead = read(sfd, &stud_detail, sizeof(struct student))) > 0)
+   	  {
+       		 // Process the record
+        	 if(strcmp(stud_detail.loginid,u.loginid)==0)
+		  {
+		  	int offset=lseek(sfd,-sizeof(struct student),SEEK_CUR);
+			if(offset==-1)
+			{
+				perror("error in reaching required record\n");
+				return 0;
+			}
+			struct flock writel;
+			 writel.l_type=F_WRLCK;
+			 writel.l_whence=SEEK_CUR;
+		  	 writel.l_start=0;
+		  	 writel.l_len=sizeof(struct student);
+		 	 int status=fcntl(sfd,F_SETLKW,&writel);
+		 	 if(status==-1)
+			{
+				perror("error in fcntl\n");
+			}
+			strcat(writeBuffer,"Enter new Password\n");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+     	     		  if (writeBytes == -1)
+     	      		 {
+              		  perror("Error while writing data to client!");
+                	return 0;
+     	      		 }
+        		bzero(writeBuffer, sizeof(writeBuffer));
+        		readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        		if (readBytes == -1)
+        		 {
+               		 perror("Error while reading");
+               		 return 0;
+        		}
+        		strcpy(stud_detail.password,readBuffer);
+    			stud_detail.password[readBytes-1] = '\0';
+    			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","Changed Password=", stud_detail.password);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	
+    			bzero(readBuffer, sizeof(readBuffer));
+    			ssize_t bytesWrite=write(sfd,&stud_detail,sizeof(struct student));
+			if (bytesWrite <= 0){
+       			 perror("Error in writing struct\n");
+      			  return 0;
+    			}
+    			 writel.l_type=F_UNLCK;
+			 fcntl(sfd, F_SETLKW, &writel);
+			 close(sfd);
+			 bzero(readBuffer, sizeof(readBuffer));
+    			 strcpy(writeBuffer,"\nSuccessfully Updated\n");
+			 writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			 return 1;
+		  }
+   	 }
+   	 return 0;
+   }

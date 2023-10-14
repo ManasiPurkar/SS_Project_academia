@@ -863,6 +863,9 @@ int viewStudent(int desc)
 			bzero(writeBuffer, sizeof(writeBuffer));
 			sprintf(writeBuffer, "\n%s%s","login id=", stud_detail.loginid);
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	bzero(writeBuffer, sizeof(writeBuffer));
+	sprintf(writeBuffer, "\n%s%s","PASSWORD=", stud_detail.password);
+	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			bzero(writeBuffer, sizeof(writeBuffer));
 			sprintf(writeBuffer, "\n%s%s","name=", stud_detail.name);
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));

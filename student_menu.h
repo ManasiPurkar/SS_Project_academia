@@ -14,7 +14,7 @@ int student_menu(int desc)
    	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
 	strcpy(writeBuffer,"______Welcome Student_______\n");
 	strcat(writeBuffer,"Choose one from below\n");
-	strcat(writeBuffer,"1.View all courses\n 2.Enroll new course\n 3.Unenroll course\n 4.View enrolled courses\n 5.Logout\n");
+	strcat(writeBuffer,"1.View all courses\n 2.Enroll new course\n 3.Unenroll course\n 4.View enrolled courses\n 5.Change Passsword\n 6.Logout\n");
 	strcat(writeBuffer,"Enter Option number: \n");
 	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -73,6 +73,14 @@ int student_menu(int desc)
 			}
 			break;
 		case 5:
+			if(!change_password_stud(desc))
+			{
+			bzero(writeBuffer, sizeof(writeBuffer));
+			strcat(writeBuffer,"Error in change password\n");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			}
+			break;
+		case 6:
 			authenticated=0;
 			break;
 		default:

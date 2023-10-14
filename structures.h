@@ -1,16 +1,8 @@
 
 
-/*struct superadmin
-{
-	char loginid[]="sad01";
-	char password[]="sadmin123";
-};*/
 struct admin
 {
-	/*int id;
-	char loginid[9];
-	char password[10];
-	*/
+	
 	char loginid[5];
 	char password[9];
 };

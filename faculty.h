@@ -14,7 +14,7 @@ int view_offering_courses(int desc); //show more data in this if possible
 int add_new_course(int desc);
 int remove_course(int desc);
 int update_course(int desc);
-
+int change_password(int desc);
 /*int main()
 {
  	int status=login();
@@ -760,3 +760,76 @@ int update_course(int desc)
 	}
 	return 0;	
 }
+
+int change_password(int desc)
+{
+	char readBuffer[1000],writeBuffer[1000];
+   	ssize_t readBytes, writeBytes; 
+	struct faculty faculty_detail;
+	bzero(writeBuffer, sizeof(writeBuffer)); // Empty the write buffer
+   	strcpy(writeBuffer,"Welcome to Change Password\n");
+	int facfd=open("faculty.txt", O_RDWR);
+	if(facfd==-1)
+	{
+		perror("error in opening\n");
+		return 0;
+	}
+	ssize_t bytesRead;
+	 while ((bytesRead = read(facfd, &faculty_detail, sizeof(struct faculty))) > 0)
+   	  {
+       		 // Process the record
+        	 if(strcmp(faculty_detail.loginid,u.loginid)==0)
+		  {
+		  	int offset=lseek(facfd,-sizeof(struct faculty),SEEK_CUR);
+			if(offset==-1)
+			{
+				perror("error in reaching required record\n");
+				return 0;
+			}
+			struct flock writel;
+			 writel.l_type=F_WRLCK;
+			 writel.l_whence=SEEK_CUR;
+		  	 writel.l_start=0;
+		  	 writel.l_len=sizeof(struct faculty);
+		 	 int status=fcntl(facfd,F_SETLKW,&writel);
+		 	 if(status==-1)
+			{
+				perror("error in fcntl\n");
+			}
+			strcat(writeBuffer,"Enter new Password\n");
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+     	     		  if (writeBytes == -1)
+     	      		 {
+              		  perror("Error while writing data to client!");
+                	return 0;
+     	      		 }
+        		bzero(writeBuffer, sizeof(writeBuffer));
+        		readBytes = read(desc, readBuffer, sizeof(readBuffer));
+        		if (readBytes == -1)
+        		 {
+               		 perror("Error while reading");
+               		 return 0;
+        		}
+        		strcpy(faculty_detail.password,readBuffer);
+    			faculty_detail.password[readBytes-1] = '\0';
+    			bzero(writeBuffer, sizeof(writeBuffer));
+			sprintf(writeBuffer, "\n%s%s","Changed Password=", faculty_detail.password);
+			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+	
+    			bzero(readBuffer, sizeof(readBuffer));
+    			ssize_t bytesWrite=write(facfd,&faculty_detail,sizeof(struct faculty));
+			if (bytesWrite <= 0){
+       			 perror("Error in writing struct\n");
+      			  return 0;
+    			}
+			 writel.l_type=F_UNLCK;
+			 fcntl(facfd, F_SETLKW, &writel);
+			 close(facfd);
+			 bzero(readBuffer, sizeof(readBuffer));
+    			 strcpy(writeBuffer,"\nSuccessfully Updated\n");
+			 writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
+			 return 1;
+		  }
+   	 }
+   	 return 0;
+   }
