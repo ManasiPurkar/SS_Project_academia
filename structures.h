@@ -1,4 +1,7 @@
-
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- All structs
+*/
 
 struct admin
 {
