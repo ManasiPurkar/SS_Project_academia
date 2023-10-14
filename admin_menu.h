@@ -1,3 +1,7 @@
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- Admin menu
+*/
 #include <stdio.h>
 #include <unistd.h>
 
