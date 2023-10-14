@@ -1,3 +1,8 @@
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- Faculty fun
+*/
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
