@@ -180,55 +180,8 @@ int checkfaculty(char* loginid,char* password)
     	close(facfd);
 
     return 0;
-	/*
-    	char *token;
 
-    	// Tokenize the string
-    	token = strtok(loginid, "_");
-
-   	 // Check if there are enough tokens
-    	if (token != NULL) {
-		// Skip the first token
-		token = strtok(NULL, " ");
-		// Check if there is a second token
-		if (token != NULL) {
-		    
-   		 char *endptr; // Used to check for conversion errors
-    		 long ID = strtol(token, &endptr, 10);
-    
-   		 if (*endptr != '\0' && *endptr != '\n') {
-      		  printf("Conversion failed. Invalid characters found: %s\n", endptr);
-  		  return false;
-  		  }
-    		  off_t recordoff=(off_t)(sizeof(struct faculty) * (ID -1));
-		  struct flock readl;
-		  readl.l_type=F_RDLCK;
-		  readl.l_whence=SEEK_SET;
-		  readl.l_start=recordoff;
-		  readl.l_len=sizeof(struct faculty);
-		  int status=fcntl(facfd,F_SETLKW,&readl);
-		  ssize_t readb=read(fd, &faculty_detail, sizeof(faculty));
-		  if(readb==-1)
-		  {
-		  	perror("error in reading record\n");
-		  	return false;
-		  }
-		  if(faculty_detail.loginid==loginid && faculty_detail.password==password)
-		  {
-			 return true;
-		  }
-		  readl.l_type=F_UNLCK;
-		  fcntl(facfd, F_SETLKW, &readl);
-		  close(facfd);
-		    
-		} else {
-		    printf("There is no second token.\n");
-		}
-    	} 
-    	else {
-        	printf("There are no tokens in the input string.\n");
-    	}
-	*/
+   		
 		
 }
 

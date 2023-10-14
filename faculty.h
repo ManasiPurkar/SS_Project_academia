@@ -4,42 +4,15 @@
 #include <string.h>
 #include<unistd.h>
 
-//#include "login.h"
+
 #include "student.h"
-//#include "student.c" (check update c at last)
 
-
-//for testing Fac_4=v500TVuKW, Fac_10=54%%(&a2B
 int view_offering_courses(int desc); //show more data in this if possible
 int add_new_course(int desc);
 int remove_course(int desc);
 int update_course(int desc);
 int change_password(int desc);
-/*int main()
-{
- 	int status=login();
-	if(status)
-	{
-	printf("successfully logged in\n");
-	}
-	else
-	{
-	printf("error in log in\n");
-	}
-	if(!view_offering_courses())
-	{
-		printf("error in view offering courses\n");
-	}
-	if(!add_new_course())
-	{
-		printf("error in adding courses\n");
-	}
-	if(!update_course())
-	{
-		printf("error in updating courses\n");
-	}	
-	return 0;
-}*/
+
 int view_offering_courses(int desc)
 {
 	char readBuffer[1000],writeBuffer[1000];
@@ -79,11 +52,6 @@ int view_offering_courses(int desc)
    			sprintf(writeBuffer, "\n%s%d","No. of offered courses=", faculty_detail.no_of_offered_c);
    			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			bzero(writeBuffer, sizeof(writeBuffer));
-			/* printf("Offered courses=");
-			 for(int i=0;i<10;i++)
-			 {
-			    	printf("%d, ",faculty_detail.offered_courses[i]);
-			 }*/
 			sprintf(writeBuffer, "\n%s","offered courses=");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			bzero(writeBuffer, sizeof(writeBuffer));	
@@ -176,14 +144,7 @@ int add_new_course(int desc)
 		readl.l_type=F_UNLCK;
 		fcntl(cfd, F_SETLKW, &readl);
 	}
-	//printf("%d",newc.id);
-	/*printf("Enter course name: \n");
-	ssize_t bytesRead = read(STDIN_FILENO, newc.name, sizeof(newc.name));
-	if (bytesRead <= 1){
-        perror("Error in storing name\n"); //equal to 1 for handling empty name
-        return 0;
-    	}
-    	newc.name[bytesRead-1] = '\0';*/
+	
     	strcat(writeBuffer,"Enter course name: \n");
     	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -201,14 +162,7 @@ int add_new_course(int desc)
         strcpy(newc.name,readBuffer);
     	newc.name[readBytes-1] = '\0';
     	bzero(readBuffer, sizeof(readBuffer));
-    	/*printf("Enter department: \n");
-    	bytesRead = read(STDIN_FILENO, newc.dept, sizeof(newc.dept));
-	if (bytesRead <= 1){
-        perror("Error in storing departmet\n");
-        return 0;
-    	} 
-    	newc.dept[bytesRead-1] = '\0';*/
-    	
+    
     	strcat(writeBuffer,"Enter department: \n");
     	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -226,13 +180,7 @@ int add_new_course(int desc)
         strcpy(newc.dept,readBuffer);
     	newc.dept[readBytes-1] = '\0';
     	bzero(readBuffer, sizeof(readBuffer));
-    	/*printf("Enter total seats: \n");
-    	char total_seats[10];
-   	 if (read(STDIN_FILENO, total_seats, sizeof(total_seats)) == -1) {
-       		 perror("Error reading total_seats");
-        	return 0;
-    	}
-	newc.total_seats = atoi(total_seats);*/
+    	
 	strcat(writeBuffer,"Enter total seats: \n");
     	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -256,13 +204,7 @@ int add_new_course(int desc)
 	{
 	newc.enrolled_stud[i]=0;
 	}
-	/*printf("Enter credits: \n");
-	char credits[10];
-   	 if (read(STDIN_FILENO, credits, sizeof(credits)) == -1) {
-       		 perror("Error reading credits");
-        	return 0;
-    	}
-	newc.credits = atoi(credits);*/
+	
 	strcat(writeBuffer,"Enter credits: \n");
     	writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
         if (writeBytes == -1)
@@ -281,12 +223,6 @@ int add_new_course(int desc)
 	bzero(readBuffer, sizeof(readBuffer));
 	
 	
-	/*printf("id=%d \n",newc.id);
-	printf("name=%s \n",newc.name);
-    	printf("dept=%s \n",newc.dept);
-    	printf("total_seats=%d \n",newc.total_seats);
-    	printf("credits=%d \n",newc.credits);
-    	printf("offered_by=%s \n",newc.offered_by);*/
     	
     	bzero(writeBuffer, sizeof(writeBuffer));
 	sprintf(writeBuffer, "\n%s%d","id=", newc.id);
@@ -404,11 +340,7 @@ int remove_course(int desc)
         }
         cid = atoi(readBuffer);
         bzero(readBuffer, sizeof(readBuffer));
-	/*char reqcid[10];
-   	 if (read(STDIN_FILENO, reqcid, sizeof(reqcid)) == -1) {
-       		 perror("Error reading course id");
-        	return 0;
-    	}*/
+	
 	
 	
 	ssize_t bytesRead;
@@ -532,15 +464,7 @@ int remove_course(int desc)
 }
 int update_course(int desc)
 {
-	/*int cid;
-	printf("Enter course id which you want to update= \n");
 	
-	char reqcid[10];
-   	 if (read(STDIN_FILENO, reqcid, sizeof(reqcid)) == -1) {
-       		 perror("Error reading course id");
-        	return 0;
-    	}
-	cid = atoi(reqcid);*/
 	int cid;
 	char readBuffer[1000],writeBuffer[1000];
    	ssize_t readBytes, writeBytes; 
@@ -603,13 +527,7 @@ int update_course(int desc)
 		{
 			perror("error in fcntl\n");
 		}
-		/*printf("Enter course name: \n");
-		bytesRead = read(STDIN_FILENO, course_detail.name, sizeof(course_detail.name));
-		if (bytesRead <= 1){
-        		perror("Error in storing name\n"); //equal to 1 for handling empty name
-        		return 0;
-    		}
-    		course_detail.name[bytesRead-1] = '\0';*/
+		
     		strcat(writeBuffer,"Enter course name: \n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
      	       if (writeBytes == -1)
@@ -627,13 +545,7 @@ int update_course(int desc)
         	strcpy(course_detail.name,readBuffer);
     		course_detail.name[readBytes-1] = '\0';
     		bzero(readBuffer, sizeof(readBuffer));
-    		/*printf("Enter department: \n");
-    		bytesRead = read(STDIN_FILENO, course_detail.dept, sizeof(course_detail.dept));
-		if (bytesRead <= 1){
-        	perror("Error in storing departmet\n");
-        	return 0;
-    		} 
-    		course_detail.dept[bytesRead-1] = '\0';*/
+    		
     		strcpy(writeBuffer,"Enter deepartment: \n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
      	       if (writeBytes == -1)
@@ -652,14 +564,7 @@ int update_course(int desc)
     		course_detail.dept[readBytes-1] = '\0';
     		bzero(readBuffer, sizeof(readBuffer));
     		
-    		/*printf("Enter credits: \n");
-    		char credit[10];
-    		if (read(STDIN_FILENO, credit, sizeof(credit)) == -1) {
-       		 perror("Error reading credits");
-        	return 0;
-    		}
-    		course_detail.credits = atoi(credit);
-    		*/
+    		
     		strcpy(writeBuffer,"Enter credits: \n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
      	       if (writeBytes == -1)
@@ -679,14 +584,7 @@ int update_course(int desc)
     		
     		
     		int dec_seats;
-    		/*
-    		char decseats[10];
-    		printf("Decrease total seats by: \n");
-    		if (read(STDIN_FILENO, decseats, sizeof(decseats)) == -1) {
-       		 perror("Error reading decseats");
-        	return 0;
-    		}
-    		dec_seats = atoi(decseats);*/
+    		
     		strcpy(writeBuffer,"Decrease total seats by: \n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
      	       if (writeBytes == -1)
@@ -715,13 +613,7 @@ int update_course(int desc)
  			   	course_detail.enrolled_seats=course_detail.total_seats;	
     		}
     		int inc_seats;
-    		/*char incseats[10];
-    		printf("Increase total seats by: \n");
-    		if (read(STDIN_FILENO, incseats, sizeof(incseats)) == -1) {
-       		 perror("Error reading incseats");
-        	return 0;
-    		}
-    		inc_seats = atoi(incseats);*/
+    		
     		strcpy(writeBuffer,"Increase total seats by: \n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
      	       if (writeBytes == -1)

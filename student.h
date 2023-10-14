@@ -4,21 +4,6 @@
 #include <string.h>
 #include<unistd.h>
 
-//#include "login.c"
-
-//PHD_2 : _42ckV*@q
-//loginid=MT_3
-//password=Ppvk78aqt
-/*
-login id=MT_6
-password=2azq(9E&U
-login id=PHD_7
-password=ye73SSdod
-login id=MS_8
-password=o@WYd&AIa
-
-
-*/
 
 int view_courses(int desc);
 int enroll_course(int desc);
@@ -26,32 +11,7 @@ int unenroll_course(int desc);
 int unenroll(int stdid,int cid);
 int view_enrolled_courses(int desc);
 int change_password_stud(int desc);
-/*
-int main()
-{
- 	int status=login();
-	if(status)
-	{
-	printf("successfully logged in\n");
-	}
-	else
-	{
-	printf("error in log in\n");
-	}
-	if(!view_enrolled_courses())
-	{
-		printf("error in view offering courses\n");
-	}
-	if(!add_new_course())
-	{
-		printf("error in adding courses\n");
-	}
-	if(!update_course())
-	{
-		printf("error in updating courses\n");
-	}	
-	return 0;
-}*/
+
 int view_courses(int desc)
 {
 	char readBuffer[1000],writeBuffer[1000];
@@ -78,19 +38,7 @@ int view_courses(int desc)
 	 while ((bytesRead = read(cfd, &course_detail, sizeof(struct course))) > 0)
    	  {
         // Print the record
-       		/*printf("id= %d\n",course_detail.id);
-       		printf("name= %s\n",course_detail.name);
-       		printf("dept= %s\n",course_detail.dept);
-       		printf("total_seats= %d\n",course_detail.total_seats);
-       		printf("enrolled_seats= %d\n",course_detail.enrolled_seats);
-       		printf("credits= %d\n",course_detail.credits);
-       		printf("offered by= %s\n",course_detail.offered_by);
-       		printf("enrolled student ids=");
-       		for(int i=0;i<course_detail.enrolled_seats;i++) 
-       		{
-       		printf(" %d ",course_detail.enrolled_stud[i]);
-       		}
-       		printf("\n");*/
+       		
        		bzero(writeBuffer, sizeof(writeBuffer));
 		sprintf(writeBuffer, "\n%s%d","id=", course_detail.id);
 		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
@@ -113,18 +61,7 @@ int view_courses(int desc)
 		sprintf(writeBuffer, "\n%s%d","Enrolled Seats=", course_detail.enrolled_seats);
 		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 		bzero(writeBuffer, sizeof(writeBuffer));
-		/*sprintf(writeBuffer, "\n%s","Enrolled student ids=");
-		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
-		bzero(writeBuffer, sizeof(writeBuffer));	
-    		for (int i = 0; i <course_detail.enrolled_seats; i++) {
-       			 // Format each integer into a string and append it to the writeBuffer
-       			 char temp[8];  // Assumes a maximum of 8 digits for each integer
-       			 sprintf(temp, "%d", course_detail.enrolled_stud[i]);
-       			 strcat(writeBuffer, temp);
-       			 if (i <(course_detail.enrolled_seats-1)) {
-            			strcat(writeBuffer, " ");
-       			 }
-		}*/
+		
 		strcat(writeBuffer,"\n");
     		writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
        		bzero(writeBuffer, sizeof(writeBuffer));  		
@@ -168,16 +105,7 @@ int enroll_course(int desc)
         }
         cid = atoi(readBuffer);
         bzero(readBuffer, sizeof(readBuffer));
-	/*int cid;
-	printf("Enter course id which you want to enroll= \n");
 	
-	char reqcid[10];
-   	 if (read(STDIN_FILENO, reqcid, sizeof(reqcid)) == -1) {
-       		 perror("Error in reading course id");
-        	return 0;
-    	}
-	cid = atoi(reqcid);
-	*/
 	ssize_t bytesRead;
 	//printf("reqc=%d\n",cid);
 	struct course course_detail;
@@ -305,15 +233,7 @@ int enroll_course(int desc)
 
 int unenroll_course(int desc)
 {
-	/*int cid;
-	printf("Enter course id which you want to unenroll= \n");
 	
-	char reqcid[10];
-   	 if (read(STDIN_FILENO, reqcid, sizeof(reqcid)) == -1) {
-       		 perror("Error in reading course id");
-        	return 0;
-    	}
-	cid = atoi(reqcid);*/
 	int cid;
 	char readBuffer[1000],writeBuffer[1000];
    	ssize_t readBytes, writeBytes; 
@@ -515,11 +435,7 @@ int view_enrolled_courses(int desc)
 			{
 				perror("error in fcntl\n");
 			}
-			/*printf("enrolled courses= ");
-			for(int i=0;i<10;i++)
-  			{
-				printf("%d ",stud_detail.enrolled_courses[i]);
-			}*/
+			
 			sprintf(writeBuffer, "\n%s","Enrolled courses=");
 			writeBytes = write(desc, writeBuffer, strlen(writeBuffer));
 			bzero(writeBuffer, sizeof(writeBuffer));	
