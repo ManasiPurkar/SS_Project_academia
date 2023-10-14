@@ -24,11 +24,10 @@ Admin can Do
 2.Add Faculty
 3.View Student Details
 4.View Faculty Details
-5.Deactivate Student
-6. Deactivate Faculty
 7. Update Student Details
 8. Update Faculty Details
-9.Exit from this menu
+9.Change password
+10.logout
 
 
 Once we use the credientials for the student(which is created by the admin )system will verify the credentials of the student and then student get loggedin and get the following option to choose
@@ -38,7 +37,15 @@ Student can Do
 3.Drop course
 4.View enrolled course details
 5.Change passwprd
-6.logout and exit
+6.logout 
+
+and similarly faculty can do
+1.View offered courses
+2.Add course
+3. Remove course
+4. Update course
+5.change password
+6.logout
 
 
 
