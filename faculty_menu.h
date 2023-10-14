@@ -1,3 +1,7 @@
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- Faculty menu
+*/
 #include <stdio.h>
 #include <unistd.h>
 
