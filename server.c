@@ -1,3 +1,7 @@
+/*Name- Manasi Purkar
+Roll- MT2023158
+File- server code
+*/
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
