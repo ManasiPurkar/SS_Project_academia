@@ -19,19 +19,19 @@ Software System Mini Project
   - Password : sadmin123
 
 - Once we use this credientials system will verify the credentials and then admin get loggedin and get the following option to choose
-  **Admin can Do**
+  - **Admin can Do**
   - 1.Add Student
   - 2.Add Faculty
   - 3.View Student Details
   - 4.View Faculty Details
-  - 5. Update Student Details
-  - 6. Update Faculty Details
+  - 5.Update Student Details
+  - 6.Update Faculty Details
   - 7.Change password
   - 8.logout
 
 
 - Once we use the credientials for the student(which is created by the admin )system will verify the credentials of the student and then student get loggedin and get the following option to choose
-  **Student can Do**
+ - **Student can Do**
 - 1.View all courses
 - 2.Enroll the course
 - 3.Drop course
@@ -39,7 +39,7 @@ Software System Mini Project
 - 5.Change passwprd
 - 6.logout 
 
-  **faculty can do**
+  - **faculty can do**
 - 1.View offered courses
 - 2.Add course
 - 3. Remove course
