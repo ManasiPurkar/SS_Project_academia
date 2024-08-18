@@ -1,12 +1,12 @@
 # SS_Project_academia
-Software System Mini Project
-Mini-Project - **Design & Development of Online Course Registration Academia Project**
-How to execute?
-**Step 1**: Get the server up and running
+## Software System Mini Project
+## Mini-Project - **Design & Development of Online Course Registration Academia Project**
+## How to execute?
+### **Step 1**: Get the server up and running
 Compile the server program : gcc server.c -o server
 Run the server program : ./server
 
-**Step 2**: Run the client program
+### **Step 2**: Run the client program
 Compile the client program: gcc client.c -o client
 Run the client program for every user on diiferent differnt terminal of Ubuntu : ./client.out
 Once we run client program we get the following option to choose:
